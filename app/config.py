@@ -1,0 +1,8 @@
+import os
+
+class Config:
+    SECRET_KEY = os.getenv("SECRET_KEY")  # Gets value from .env
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
