@@ -19,5 +19,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/auth')
     from app.routes.school_routes import school_bp
     app.register_blueprint(school_bp)
+    from app.routes.school_admin_routes import school_admin_bp
+    app.register_blueprint(school_admin_bp)
 
     return app
