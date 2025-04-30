@@ -1,14 +1,17 @@
 from flask import Blueprint, request, jsonify
-from models import db, User
+from app.extensions import db
+from app.models.user import User
+import json
 from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity
 )
 from datetime import datetime
 
-auth_bp = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__)
 
-@auth_bp.route('/register', methods=['POST'])
+@auth.route('/register', methods=['POST'])
 def register():
+    # print("Register endpoint hit")
     data = request.get_json()
     required_fields = ['full_name', 'email', 'phone_number', 'dob', 'religion',
                        'gender', 'password', 'address']
@@ -26,16 +29,19 @@ def register():
         religion=data['religion'],
         gender=data['gender'],
         address=data['address'],
-        role='superadmin',
-        school_id=data.get('school_id')  # None for general superadmin
+        role='super_admin',
+        school_id=data.get('school_id')
     )
-    user.set_password(data['password'])
+    user.set_password(data['password'])  # Correct password hashing
+
     db.session.add(user)
     db.session.commit()
 
     return jsonify({'message': 'Superadmin registered successfully'}), 201
 
-@auth_bp.route('/login', methods=['POST'])
+import json
+
+@auth.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     if not data or not data.get('email') or not data.get('password'):
@@ -45,10 +51,17 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({'error': 'Invalid credentials'}), 401
 
-    access_token = create_access_token(identity=user.id)
+    identity = json.dumps({
+        "user_id": user.id,
+        "role": user.role,
+        "school_id": user.school_id if user.role != 'super_admin' else None,
+    })
+    access_token = create_access_token(identity=identity)
     return jsonify({'access_token': access_token}), 200
 
-@auth_bp.route('/logout', methods=['POST'])
+
+
+@auth.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
     # Implement token revocation logic here if needed
