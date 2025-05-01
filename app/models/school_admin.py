@@ -16,6 +16,7 @@ class SchoolAdmin(db.Model):
     gender = db.Column(db.String(20))
     level = db.Column(db.String(20))
     step = db.Column(db.String(20))
+    address = db.Column(db.String(255)) 
     role = db.Column(db.String(50))  # e.g., head_admin, assistant_admin
     district = db.Column(db.String(100))
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=False)

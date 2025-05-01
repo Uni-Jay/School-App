@@ -38,6 +38,7 @@ def add_school_admin():
         gender=data.get('gender'),
         level=data.get('level'),
         step=data.get('step'),
+        address=data.get('address'),
         role=data.get('role'),
         district=data.get('district'),
         school_id=data['school_id'],
@@ -112,6 +113,7 @@ def edit_school_admin(admin_id):
     admin.level = data.get('level', admin.level)
     admin.step = data.get('step', admin.step)
     admin.role = data.get('role', admin.role)
+    admin.address = data.get('address', admin.address)
     admin.district = data.get('district', admin.district)
     admin.school_id = data.get('school_id', admin.school_id)
     admin.employment_date = datetime.strptime(data['employment_date'], "%Y-%m-%d") if data.get('employment_date') else admin.employment_date
@@ -154,7 +156,6 @@ def edit_school_admin(admin_id):
                 <tr><td style="padding: 8px; font-weight: bold;">Level:</td><td style="padding: 8px;">{admin.level or "N/A"}</td></tr>
                 <tr><td style="padding: 8px; font-weight: bold;">Step:</td><td style="padding: 8px;">{admin.step or "N/A"}</td></tr>
                 <tr><td style="padding: 8px; font-weight: bold;">Employment Date:</td><td style="padding: 8px;">{admin.employment_date or "N/A"}</td></tr>
-                <tr><td style="padding: 8px; font-weight: bold;">Role:</td><td style="padding: 8px;">{admin.role or "N/A"}</td></tr>
             </table>
 
             <p style="margin-top: 30px;">If you did not request these changes, please contact your school administrator.</p>
