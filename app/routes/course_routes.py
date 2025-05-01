@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import Course  # Adjust the import based on your actual file structure
+from app.models.courses import Course  # Adjust the import based on your actual file structure
 from app.extensions import db
 
 course_bp = Blueprint('course_bp', __name__,url_prefix='/course')
