@@ -21,5 +21,7 @@ def create_app():
     app.register_blueprint(school_bp)
     from app.routes.school_admin_routes import school_admin_bp
     app.register_blueprint(school_admin_bp)
+    from app.routes.course_routes import course_bp
+    app.register_blueprint(course_bp)
 
     return app
