@@ -168,3 +168,52 @@ def edit_school_admin(admin_id):
     )
 
     return jsonify({"message": "School admin updated successfully."}), 200
+
+
+@school_admin_bp.route('/all', methods=['GET'])
+def get_all_school_admins():
+    admins = SchoolAdmin.query.all()
+    return jsonify([serialize_admin(admin) for admin in admins]), 200
+
+
+@school_admin_bp.route('/by-school/<int:school_id>', methods=['GET'])
+def get_admins_by_school_id(school_id):
+    admins = SchoolAdmin.query.filter_by(school_id=school_id).all()
+    return jsonify([serialize_admin(admin) for admin in admins]), 200
+
+
+@school_admin_bp.route('/<int:admin_id>', methods=['GET'])
+def get_admin_by_id(admin_id):
+    admin = SchoolAdmin.query.get(admin_id)
+    if not admin:
+        return jsonify({"error": "School admin not found"}), 404
+    return jsonify(serialize_admin(admin)), 200
+
+
+# 🧩 Helper function to serialize SchoolAdmin objects
+def serialize_admin(admin):
+    return {
+        "id": admin.id,
+        "full_name": admin.full_name,
+        "email": admin.email,
+        "phone_number": admin.phone_number,
+        "dob": admin.dob.strftime('%Y-%m-%d') if admin.dob else None,
+        "nationality": admin.nationality,
+        "state_of_origin": admin.state_of_origin,
+        "local_government": admin.local_government,
+        "religion": admin.religion,
+        "gender": admin.gender,
+        "level": admin.level,
+        "step": admin.step,
+        "role": admin.role,
+        "address": admin.address,
+        "district": admin.district,
+        "school_id": admin.school_id,
+        "employment_date": admin.employment_date.strftime('%Y-%m-%d') if admin.employment_date else None,
+        "social_media": admin.social_media,
+        "website": admin.website,
+        "posts": admin.posts,
+        "school_super_admin_id": admin.school_super_admin_id,
+        "notes": admin.notes,
+        "image": admin.image
+    }
