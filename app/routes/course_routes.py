@@ -1,24 +1,35 @@
 from flask import Blueprint, request, jsonify
-from app.models.courses import Course  # Adjust the import based on your actual file structure
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.models.courses import Course
+from app.models.user import User
 from app.extensions import db
-
 course_bp = Blueprint('course_bp', __name__,url_prefix='/course')
 
 # 1. Add Course
-@course_bp.route('/add', methods=['POST'])
-def add_course():
-    data = request.get_json()
 
-    required_fields = ['course_name', 'course_code', 'school_id', 'school_super_admin_id']
+@course_bp.route('/add', methods=['POST'])
+@jwt_required()
+def add_course():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    if not user or user.role != 'school_super_admin':
+        return jsonify({"error": "Access denied: Only school_super_admins can add courses"}), 403
+
+    data = request.get_json()
+    required_fields = ['course_name', 'course_code']
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"{field} is required"}), 400
 
+    if not user.school_id:
+        return jsonify({"error": "User is not associated with any school"}), 400
+
     course = Course(
         course_name=data['course_name'],
         course_code=data['course_code'],
-        school_id=data['school_id'],
-        school_super_admin_id=data['school_super_admin_id']
+        school_id=user.school_id,
+        school_super_admin_id=user.id
     )
     db.session.add(course)
     db.session.commit()
@@ -27,7 +38,6 @@ def add_course():
         "message": "Course added successfully",
         "course_id": course.id
     }), 201
-
 
 # 2. Edit Course by ID
 @course_bp.route('/edit/<int:course_id>', methods=['PUT'])

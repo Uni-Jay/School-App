@@ -17,6 +17,8 @@ class User(db.Model):
     address = db.Column(db.String(255))
     school_id = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

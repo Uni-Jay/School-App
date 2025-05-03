@@ -2,11 +2,13 @@
 from flask import Flask
 from app.config import Config
 from app.extensions import db, migrate, jwt
+from flask_cors import CORS
 from dotenv import load_dotenv
 load_dotenv()
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(Config)
 
     # Initialize extensions
@@ -15,13 +17,15 @@ def create_app():
     jwt.init_app(app)
 
     # Import routes and register blueprints AFTER extensions
-    from app.auth.auth_routes import auth
-    app.register_blueprint(auth, url_prefix='/auth')
+    from app.auth.auth_routes import auth_bp
+    app.register_blueprint(auth_bp)
     from app.routes.school_routes import school_bp
     app.register_blueprint(school_bp)
     from app.routes.school_admin_routes import school_admin_bp
     app.register_blueprint(school_admin_bp)
     from app.routes.course_routes import course_bp
     app.register_blueprint(course_bp)
+    from app.routes.user_routes import user_bp
+    app.register_blueprint(user_bp)
 
     return app
