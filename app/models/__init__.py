@@ -5,3 +5,4 @@ from .user import User  # Import User model to ensure it's registered
 from .school import School
 from .school_admin import SchoolAdmin
 from .courses import Course
+from .role import Role

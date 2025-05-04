@@ -1,10 +1,23 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, current_app
 from app.extensions import db
 from app.models import User
 from datetime import datetime
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
+from werkzeug.utils import secure_filename
+from uuid import uuid4
 
 user_bp = Blueprint('user', __name__)
+
+# Helper: Save image
+def save_image(image_file):
+    if image_file:
+        filename = secure_filename(image_file.filename)
+        unique_filename = f"{uuid4().hex}_{filename}"
+        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+        image_file.save(upload_path)
+        return unique_filename
+    return None
 
 # Get all active users
 @user_bp.route('/users', methods=['GET'])
@@ -19,7 +32,7 @@ def get_all_users():
             "phone_number": u.phone_number,
             "dob": u.dob.strftime('%Y-%m-%d') if u.dob else None,
             "religion": u.religion,
-            "image": u.image,
+            "image": f"/{current_app.config['UPLOAD_FOLDER']}/{u.image}" if u.image else None,
             "gender": u.gender,
             "role": u.role,
             "address": u.address,
@@ -42,7 +55,7 @@ def get_user(user_id):
         "phone_number": user.phone_number,
         "dob": user.dob.strftime('%Y-%m-%d') if user.dob else None,
         "religion": user.religion,
-        "image": user.image,
+        "image": f"/{current_app.config['UPLOAD_FOLDER']}/{user.image}" if user.image else None,
         "gender": user.gender,
         "role": user.role,
         "address": user.address,
@@ -56,7 +69,7 @@ def add_user():
     if request.content_type.startswith('multipart/form-data'):
         data = request.form
         image_file = request.files.get('image')
-        image_filename = image_file.filename if image_file else None
+        image_filename = save_image(image_file)
     else:
         data = request.get_json()
         image_filename = data.get('image')
@@ -90,7 +103,7 @@ def edit_user(user_id):
         data = request.form
         image_file = request.files.get('image')
         if image_file:
-            user.image = image_file.filename
+            user.image = save_image(image_file)
     else:
         data = request.get_json()
         user.image = data.get('image', user.image)
@@ -105,21 +118,3 @@ def edit_user(user_id):
 
     db.session.commit()
     return jsonify({"message": "User updated successfully"}), 200
-
-# Soft delete user
-# @user_bp.route('/users/<int:user_id>', methods=['DELETE'])
-# @jwt_required()
-# def delete_user(user_id):
-#     user = User.query.get_or_404(user_id)
-#     user.is_active = False
-#     db.session.commit()
-#     return jsonify({"message": "User deactivated successfully"}), 200
-
-# Reactivate user
-# @user_bp.route('/users/<int:user_id>/reactivate', methods=['PATCH'])
-# @jwt_required()
-# def reactivate_user(user_id):
-#     user = User.query.get_or_404(user_id)
-#     user.is_active = True
-#     db.session.commit()
-#     return jsonify({"message": "User reactivated successfully"}), 200

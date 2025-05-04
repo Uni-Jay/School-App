@@ -4,12 +4,24 @@ from app.config import Config
 from app.extensions import db, migrate, jwt
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask import send_from_directory
 load_dotenv()
 
+
+
 def create_app():
+
+    # @app.route('/static/uploads/<filename>')
+    # def uploaded_file(filename):
+    #     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    
     app = Flask(__name__)
     CORS(app)
     app.config.from_object(Config)
+
+
+        
+  
 
     # Initialize extensions
     db.init_app(app)

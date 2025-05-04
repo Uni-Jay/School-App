@@ -8,6 +8,7 @@ from app.models import User  # Import your models to ensure they're registered
 from app.models import School  # Import your models to ensure they're registered
 from app.models import SchoolAdmin  # Import your models to ensure they're registered
 from app.models import Course  # Import your models to ensure they're registered
+from app.models import Role  # Import your models to ensure they're registered
 
 # Setup Alembic config
 config = context.config

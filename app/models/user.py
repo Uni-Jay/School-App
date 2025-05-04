@@ -13,11 +13,11 @@ class User(db.Model):
     image = db.Column(db.String(255))  # optional
     gender = db.Column(db.String(10))
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default='superadmin')
+    role = db.Column(db.String(30), default='super_admin', nullable=False)
     address = db.Column(db.String(255))
     school_id = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    # is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=True)
 
 
     def set_password(self, password):
