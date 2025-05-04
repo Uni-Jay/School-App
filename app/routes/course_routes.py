@@ -3,6 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.courses import Course
 from app.models.user import User
 from app.extensions import db
+
+
 course_bp = Blueprint('course_bp', __name__,url_prefix='/course')
 
 # 1. Add Course
@@ -13,8 +15,8 @@ def add_course():
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
 
-    if not user or user.role != 'school_super_admin':
-        return jsonify({"error": "Access denied: Only school_super_admins can add courses"}), 403
+    if not user or user.role != 'super_admin':
+        return jsonify({"error": "Access denied: Only super_admins can add courses"}), 403
 
     data = request.get_json()
     required_fields = ['course_name', 'course_code']
@@ -66,7 +68,7 @@ def get_all_courses():
             "course_name": course.course_name,
             "course_code": course.course_code,
             "school_id": course.school_id,
-            "school_super_admin_id": course.school_super_admin_id
+            "school_super_admin_id": course.super_admin_id
         } for course in courses
     ]
     return jsonify(result), 200
@@ -82,7 +84,7 @@ def get_courses_by_school(school_id):
             "course_name": course.course_name,
             "course_code": course.course_code,
             "school_id": course.school_id,
-            "school_super_admin_id": course.school_super_admin_id
+            "school_super_admin_id": course.super_admin_id
         } for course in courses
     ]
     return jsonify(result), 200
@@ -101,6 +103,6 @@ def get_course_by_id(course_id):
         "course_name": course.course_name,
         "course_code": course.course_code,
         "school_id": course.school_id,
-        "school_super_admin_id": course.school_super_admin_id
+        "school_super_admin_id": course.super_admin_id
     }
     return jsonify(result), 200
